@@ -53,7 +53,7 @@ double LMRNoisyBase = 0.60;
 double LMRNoisyDiv = 3.5;
 
 // QS Delta
-int DeltaBase   =  110;
+int DeltaBaseP  =  110;
 int DeltaBaseQ  = 1400;
 int DeltaBonusP =  110;
 int DeltaBonusN =  437;
@@ -109,7 +109,7 @@ static int QuiescenceDeltaMargin(const Position *pos) {
 
     // Optimistic we can improve our position by a pawn without capturing anything,
     // or if we have a pawn on the 7th we can hope to improve by a queen instead
-    const int DeltaBase = PawnOn7th(pos) ? DeltaBaseQ : DeltaBase;
+    const int DeltaBase = PawnOn7th(pos) ? DeltaBaseQ : DeltaBaseP;
 
     // Look for possible captures on the board
     const Bitboard enemy = colorBB(!sideToMove);
