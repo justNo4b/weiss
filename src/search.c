@@ -46,14 +46,46 @@ SearchLimits Limits;
 volatile bool ABORT_SIGNAL = false;
 bool noobbook = false;
 
+// LMR
+double LMRQuietBase = 1.75;
+double LMRQuietDiv = 2.25;
+double LMRNoisyBase = 0.60;
+double LMRNoisyDiv = 3.5;
+
+// QS Delta
+int DeltaBase   =  110;
+int DeltaBaseQ  = 1400;
+int DeltaBonusP =  110;
+int DeltaBonusN =  437;
+int DeltaBonusB =  460;
+int DeltaBonusR =  670;
+int DeltaBonusQ = 1400;
+
+// QS Futility Margin
+int QSFutility = 60;
+
+// Razoring
+int RazorMargin = 640;
+
+// Futility
+int Futility = 225;
+int FutilImp = 100;
+int FutilDepth = 7;
+
+// Null Move Pruning
+int NMPBase = 3;
+int NMPDDiv = 5;
+int NMPEDiv = 256;
+int NMPEMax = 3;
+
 
 // Initializes the late move reduction array
 CONSTR InitReductions() {
 
     for (int depth = 1; depth < 32; ++depth)
         for (int moves = 1; moves < 32; ++moves)
-            Reductions[0][depth][moves] = 0.60 + log(depth) * log(moves) / 3.5, // capture
-            Reductions[1][depth][moves] = 1.75 + log(depth) * log(moves) / 2.25; // quiet
+            Reductions[0][depth][moves] = LMRNoisyBase + log(depth) * log(moves) / LMRNoisyDiv, // capture
+            Reductions[1][depth][moves] = LMRQuietBase + log(depth) * log(moves) / LMRQuietDiv; // quiet
 }
 
 // Check if current position is a repetition
@@ -77,17 +109,17 @@ static int QuiescenceDeltaMargin(const Position *pos) {
 
     // Optimistic we can improve our position by a pawn without capturing anything,
     // or if we have a pawn on the 7th we can hope to improve by a queen instead
-    const int DeltaBase = PawnOn7th(pos) ? 1400 : 110;
+    const int DeltaBase = PawnOn7th(pos) ? DeltaBaseQ : DeltaBase;
 
     // Look for possible captures on the board
     const Bitboard enemy = colorBB(!sideToMove);
 
     // Find the most valuable piece we could take and add to our base
-    return DeltaBase + ((enemy & pieceBB(QUEEN )) ? 1400
-                      : (enemy & pieceBB(ROOK  )) ? 670
-                      : (enemy & pieceBB(BISHOP)) ? 460
-                      : (enemy & pieceBB(KNIGHT)) ? 437
-                                                  : 110);
+    return DeltaBase + ((enemy & pieceBB(QUEEN )) ? DeltaBonusQ
+                      : (enemy & pieceBB(ROOK  )) ? DeltaBonusR
+                      : (enemy & pieceBB(BISHOP)) ? DeltaBonusB
+                      : (enemy & pieceBB(KNIGHT)) ? DeltaBonusN
+                                                  : DeltaBonusP);
 }
 
 // Quiescence
@@ -117,7 +149,7 @@ static int Quiescence(Thread *thread, int alpha, const int beta) {
 
     InitNoisyMP(&mp, &list, thread);
 
-    int futility = score + 60;
+    int futility = score + QSFutility;
     int bestScore = score;
 
     // Move loop
@@ -257,13 +289,13 @@ static int AlphaBeta(Thread *thread, int alpha, int beta, Depth depth, PV *pv, M
     // Razoring
     if (  !pvNode
         && depth < 2
-        && eval + 640 < alpha)
+        && eval + RazorMargin < alpha)
         return Quiescence(thread, alpha, beta);
 
     // Reverse Futility Pruning
     if (  !pvNode
-        && depth < 7
-        && eval - 225 * depth + 100 * improving >= beta)
+        && depth < FutilDepth
+        && eval - Futility * depth + FutilImp * improving >= beta)
         return eval;
 
     // Null Move Pruning
@@ -274,7 +306,7 @@ static int AlphaBeta(Thread *thread, int alpha, int beta, Depth depth, PV *pv, M
         && history(-1).move != NOMOVE
         && pos->nonPawnCount[sideToMove] > 0) {
 
-        int R = 3 + depth / 5 + MIN(3, (eval - beta) / 256);
+        int R = NMPBase + depth / NMPDDiv + MIN(NMPEMax, (eval - beta) / NMPEDiv);
 
         MakeNullMove(pos);
         score = -AlphaBeta(thread, -beta, -beta+1, depth-R, &pvFromHere, 0);
