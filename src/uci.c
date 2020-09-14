@@ -64,8 +64,14 @@ extern int NMPDDiv;
 extern int NMPEDiv;
 extern int NMPEMax;
 
+// Aspiration
 extern int InitialWindow;
 extern int Delta;
+
+// History
+extern int Coeff0;
+extern int Coeff1;
+extern int Coeff2;
 
 
 // Parses the time controls
@@ -218,6 +224,13 @@ static void UCISetOption(Engine *engine, char *str) {
         InitialWindow = atoi(OptionValue(str));
     } else if (OptionName(str, "Delta")) {
         Delta = atoi(OptionValue(str));
+
+    } else if (OptionName(str, "Coeff0")) {
+        Coeff0 = atoi(OptionValue(str));
+    } else if (OptionName(str, "Coeff1")) {
+        Coeff1 = atoi(OptionValue(str));
+    } else if (OptionName(str, "Coeff2")) {
+        Coeff2 = atoi(OptionValue(str));
     }
 
     fflush(stdout);
@@ -258,6 +271,10 @@ static void UCIInfo() {
 
     printf("option name InitialWindow type spin default 12 min -10000 max 10000\n");
     printf("option name Delta type spin default 16 min -10000 max 10000\n");
+
+    printf("option name Coeff0 type spin default 0 min -10000 max 10000\n");
+    printf("option name Coeff1 type spin default 0 min -10000 max 10000\n");
+    printf("option name Coeff2 type spin default 1 min -10000 max 10000\n");
     printf("uciok\n"); fflush(stdout);
 }
 

@@ -78,8 +78,14 @@ int NMPDDiv = 5;
 int NMPEDiv = 256;
 int NMPEMax = 3;
 
+// Aspiration
 int InitialWindow = 12;
 int Delta = 16;
+
+// History
+int Coeff0 = 0;
+int Coeff1 = 0;
+int Coeff2 = 1;
 
 
 // Initializes the late move reduction array
@@ -491,7 +497,7 @@ skip_search:
 
                 // Update search history
                 if (quiet && depth > 1)
-                    thread->history[sideToMove][fromSq(move)][toSq(move)] += depth * depth;
+                    thread->history[sideToMove][fromSq(move)][toSq(move)] += Coeff2 * depth * depth + Coeff1 * depth + Coeff0;;
 
                 // If score beats beta we have a cutoff
                 if (score >= beta) {
@@ -513,7 +519,7 @@ skip_search:
         for (int i = 0; i < quietCount; ++i) {
             Move m = quiets[i];
             if (m == bestMove) continue;
-            thread->history[sideToMove][fromSq(m)][toSq(m)] -= depth * depth;
+            thread->history[sideToMove][fromSq(m)][toSq(m)] -= Coeff2 * depth * depth + Coeff1 * depth + Coeff0;
         }
 
     // Checkmate or stalemate
