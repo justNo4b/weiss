@@ -153,6 +153,19 @@ static int Quiescence(Thread *thread, int alpha, const int beta) {
     return bestScore;
 }
 
+// If alpha > 0 and we take back our last move, opponent can do the same
+// and get a fail high by repetition
+bool UpcomingRepetition(const Position *pos, Move move, int alpha) {
+
+    return alpha > 0
+        && pos->rule50 >= 3
+        && pos->histPly >= 2
+        // The current move has been made and is -1, 2 back is then -3
+        && fromSq(move) == toSq(history(-3).move)
+        && toSq(move) == fromSq(history(-3).move)
+        && pos->castlingRights == history(-3).castlingRights;
+}
+
 // Alpha Beta
 static int AlphaBeta(Thread *thread, int alpha, int beta, Depth depth, PV *pv) {
 
@@ -363,16 +376,8 @@ move_loop:
         if (quiet && quietCount < 32)
             quiets[quietCount++] = move;
 
-        // If alpha > 0 and we take back our last move, opponent can do the same
-        // and get a fail high by repetition
-        if (   pos->rule50 >= 3
-            && pos->histPly >= 2
-            && alpha > 0
-            // The current move has been made and is -1, 2 back is then -3
-            && fromSq(move) == toSq(history(-3).move)
-            && toSq(move) == fromSq(history(-3).move)
-            && pos->castlingRights == history(-3).castlingRights) {
-
+        // Detect upcoming repetitions
+        if (UpcomingRepetition(pos, move, alpha)) {
             score = 0;
             pvFromHere.length = 0;
             goto skip_search;
