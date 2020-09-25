@@ -157,7 +157,7 @@ static int Quiescence(Thread *thread, int alpha, const int beta) {
 // and get a fail high by repetition
 static bool UpcomingRepetition(const Position *pos, Move move, int alpha) {
 
-    return alpha > 0
+    return alpha >= 0
         && pos->rule50 >= 3
         && pos->histPly >= 2
         // The current move has been made and is -1, 2 back is then -3
