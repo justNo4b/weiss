@@ -370,7 +370,8 @@ move_loop:
             && alpha > 0
             // The current move has been made and is -1, 2 back is then -3
             && fromSq(move) == toSq(history(-3).move)
-            && toSq(move) == fromSq(history(-3).move)) {
+            && toSq(move) == fromSq(history(-3).move)
+            && pos->castlingRights == history(-3).castlingRights) {
 
             score = 0;
             pvFromHere.length = 0;
