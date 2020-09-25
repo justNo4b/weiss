@@ -155,7 +155,7 @@ static int Quiescence(Thread *thread, int alpha, const int beta) {
 
 // If alpha > 0 and we take back our last move, opponent can do the same
 // and get a fail high by repetition
-bool UpcomingRepetition(const Position *pos, Move move, int alpha) {
+static bool UpcomingRepetition(const Position *pos, Move move, int alpha) {
 
     return alpha > 0
         && pos->rule50 >= 3
