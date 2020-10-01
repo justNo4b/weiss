@@ -633,6 +633,9 @@ static void *IterativeDeepening(void *voidThread) {
 // Get ready to start a search
 static void PrepareSearch(Position *pos, Thread *threads) {
 
+    // Reinit in case settings changed
+    InitReductions();
+
     // Setup threads for a new search
     for (int i = 0; i < threads->count; ++i) {
         memset(&threads[i], 0, offsetof(Thread, pos));

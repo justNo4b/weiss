@@ -35,8 +35,10 @@
 
 
 // LMR
-extern double LMRBase;
-extern double LMRDiv;
+extern double LMRQuietBase;
+extern double LMRQuietDiv;
+extern double LMRNoisyBase;
+extern double LMRNoisyDiv;
 
 // QS Delta
 extern int DeltaBaseP;
@@ -178,10 +180,14 @@ static void UCISetOption(Engine *engine, char *str) {
         noobbook = !strncmp(OptionValue(str), "true", 4);
 
     // Tuneables
-    } else if (OptionName(str, "LMRBase")) {
-        LMRBase = atoi(OptionValue(str)) / 100.0;
-    } else if (OptionName(str, "LMRDiv")) {
-        LMRDiv  = atoi(OptionValue(str)) / 100.0;
+    } else if (OptionName(str, "LMRQuietBase")) {
+        LMRQuietBase = atoi(OptionValue(str)) / 100.0;
+    } else if (OptionName(str, "LMRQuietDiv")) {
+        LMRQuietDiv  = atoi(OptionValue(str)) / 100.0;
+    } else if (OptionName(str, "LMRNoisyBase")) {
+        LMRNoisyBase = atoi(OptionValue(str)) / 100.0;
+    } else if (OptionName(str, "LMRNoisyDiv")) {
+        LMRNoisyDiv  = atoi(OptionValue(str)) / 100.0;
 
     } else if (OptionName(str, "DeltaBaseP")) {
         DeltaBaseP = atoi(OptionValue(str));
@@ -245,8 +251,10 @@ static void UCIInfo() {
     printf("option name SyzygyPath type string default <empty>\n");
     printf("option name NoobBook type check default false\n");
 
-    printf("option name LMRBase type spin default 75 min -10000 max 10000\n");
-    printf("option name LMRDiv type spin default 225 min -10000 max 10000\n");
+    printf("option name LMRQuietBase type spin default 175 min -10000 max 10000\n");
+    printf("option name LMRQuietDiv type spin default 225 min -10000 max 10000\n");
+    printf("option name LMRNoisyBase type spin default 60 min -10000 max 10000\n");
+    printf("option name LMRNoisyDiv type spin default 225 min -10000 max 10000\n");
 
     printf("option name DeltaBaseP type spin default 110 min -10000 max 10000\n");
     printf("option name DeltaBaseQ type spin default 1400 min -10000 max 10000\n");
