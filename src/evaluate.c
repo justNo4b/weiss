@@ -65,6 +65,12 @@ const int PawnPassed[8] = {
     S( 26, 80), S( 60,139), S(136,196), S(  0,  0),
 };
 
+// Passed pawn [file]
+const int PawnPassed_FILE[8] = {
+    S(  5,  3), S(  3,  3), S( -2, -2), S( -3, -2),
+    S( -3, -3), S( -4, -5), S(  0,  4), S(  2,  3),
+};
+
 // (Semi) open file for rook and queen [pt-4]
 const int OpenFile[2]     = { S( 28, 10), S( -9,  5) };
 const int SemiOpenFile[2] = { S(  9, 15), S(  1,  5) };
@@ -76,26 +82,26 @@ const uint16_t CountModifier[8] = { 0, 0, 50, 75, 80, 88, 95, 100 };
 
 // KingLineDanger
 const int KingLineDanger[28] = {
-    S(  0,  0), S( -5, -2), S(-17,-22), S(-18, -8),
+    S(  0,  0), S( -5, -2), S(-17,-24), S(-18, -8),
     S(-36,-12), S(-41,-23), S(-39,-25), S(-40,-21),
-    S(-43,-19), S(-52,-18), S(-46,-21), S(-54,-14),
+    S(-44,-19), S(-52,-18), S(-46,-21), S(-54,-14),
     S(-57,-15), S(-60,-13), S(-66,-14), S(-68,-12),
     S(-72,-15), S(-76,-20), S(-81,-24), S(-88,-32),
     S(-95,-34), S(-101,-43), S(-109,-52), S(-115,-65),
-    S(-121,-64), S(-126,-59), S(-130,-53), S(-135,-55),
+    S(-121,-65), S(-126,-59), S(-130,-53), S(-135,-55),
 };
 
 // Mobility [pt-2][mobility]
 const int Mobility[4][28] = {
     // Knight (0-8)
-    { S(-58,-54), S(-24,-67), S( -4,-23), S(  6, 14), S( 15, 29), S( 18, 49), S( 26, 52), S( 36, 48),
+    { S(-58,-54), S(-24,-67), S( -3,-23), S(  7, 14), S( 15, 29), S( 18, 49), S( 26, 52), S( 36, 48),
       S( 51, 28) },
     // Bishop (0-13)
     { S(-55,-95), S(-19,-92), S( -1,-37), S(  6, -4), S( 14, 13), S( 21, 37), S( 25, 53), S( 23, 61),
       S( 22, 69), S( 27, 69), S( 31, 66), S( 58, 52), S( 59, 68), S( 49, 51) },
     // Rook (0-14)
     { S(-59,-69), S(-28,-58), S(-13,-35), S(-12,-17), S( -5, 15), S( -3, 35), S( -3, 54), S(  2, 57),
-      S(  9, 61), S( 17, 66), S( 26, 70), S( 28, 71), S( 29, 73), S( 43, 61), S( 88, 35) },
+      S(  9, 61), S( 16, 66), S( 25, 70), S( 28, 71), S( 29, 73), S( 43, 61), S( 88, 35) },
     // Queen (0-27)
     { S(-62,-48), S(-70,-36), S(-66,-49), S(-45,-50), S(-27,-46), S( -9,-45), S(  2,-37), S(  9,-23),
       S( 14, -7), S( 19,  9), S( 21, 24), S( 24, 34), S( 28, 39), S( 27, 49), S( 29, 55), S( 28, 63),
@@ -181,8 +187,9 @@ INLINE int EvalPawns(const Position *pos, const Color color) {
 
         // Passed pawns
         if (!((PassedMask[color][sq]) & colorPieceBB(!color, PAWN))) {
-            eval += PawnPassed[RelativeRank(color, RankOf(sq))];
+            eval += PawnPassed[RelativeRank(color, RankOf(sq))] + PawnPassed_FILE[FileOf(sq)];
             if (TRACE) T.PawnPassed[RelativeRank(color, RankOf(sq))][color]++;
+            if (TRACE) T.PawnPassed_FILE[FileOf(sq)][color]++;
         }
     }
 
