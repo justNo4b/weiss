@@ -49,6 +49,7 @@ extern const int BishopPair;
 
 // Passed pawn [rank]
 extern const int PawnPassed[RANK_NB];
+extern const int PawnPassed_FILE[RANK_NB];
 
 // (Semi) open file for rook and queen [pt-4]
 extern const int OpenFile[2];
@@ -213,6 +214,13 @@ void InitBaseParams(TVector tparams) {
         i++;
     }
 
+        // Passed pawns
+    for (int j = 0; j < 8; ++j) {
+        tparams[i][MG] = MgScore(PawnPassed_FILE[j]);
+        tparams[i][EG] = EgScore(PawnPassed_FILE[j]);
+        i++;
+    }
+
     // Semi-open and open files
     for (int j = 0; j < 2; ++j) {
         tparams[i][MG] = MgScore(OpenFile[j]);
@@ -272,6 +280,10 @@ void PrintParameters(TVector params, TVector current) {
     PrintArray("PawnPassed", tparams, i, 8, "[8]");
     i+=8;
 
+    puts("\n// Passed pawn [file]");
+    PrintArray("PawnPassed_FILE", tparams, i, 8, "[8]");
+    i+=8;
+
     puts("\n// (Semi) open file for rook and queen [pt-4]");
     PrintArray("OpenFile", tparams, i, 2, "[2]    ");
     i+=2;
@@ -314,6 +326,9 @@ void InitCoefficients(TCoeffs coeffs) {
 
     for (int j = 0; j < 8; ++j)
         coeffs[i++] = T.PawnPassed[j][WHITE] - T.PawnPassed[j][BLACK];
+
+    for (int j = 0; j < 8; ++j)
+        coeffs[i++] = T.PawnPassed_FILE[j][WHITE] - T.PawnPassed_FILE[j][BLACK];
 
     for (int j = 0; j < 2; ++j)
         coeffs[i++] = T.OpenFile[j][WHITE] - T.OpenFile[j][BLACK];
