@@ -187,7 +187,7 @@ INLINE int EvalPawns(const Position *pos, const Color color) {
 
         // Passed pawns
         if (!((PassedMask[color][sq]) & colorPieceBB(!color, PAWN))) {
-            eval += PawnPassed[RelativeRank(color, RankOf(sq))] + PawnPassed_FILE[FileOf(sq)];
+            eval += PawnPassed[RelativeRank(color, RankOf(sq))];
             if (TRACE) T.PawnPassed[RelativeRank(color, RankOf(sq))][color]++;
             if (TRACE) T.PawnPassed_FILE[FileOf(sq)][color]++;
         }
